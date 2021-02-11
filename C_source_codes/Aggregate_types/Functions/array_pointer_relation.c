@@ -6,7 +6,7 @@ int main(void){
 	int (*ptr_to_arr)[];
 	int *ptr;
 
-	ptr_to_arr = A;
+	ptr_to_arr = &A;
 	ptr = A;
 
 	printf("ptr_to_arr = %p\n", ptr_to_arr);
