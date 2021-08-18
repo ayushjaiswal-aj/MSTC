@@ -80,27 +80,51 @@ int main(int argc, char *argv[]){
 	printf("current off set = %d\n", (int)off);
 
 	if(p_flag == TRUE){
-		printf("Reading 4096 bytes using pread from current offset... \n");
-		rb = pread (fd, buffer, BUFFER_SIZE, SEEK_SET);
+		printf("readingg 4096 bytes using pread from current offset...\n");
+		rb = pread(fd, buffer, BUFFER_SIZE, SEEK_SET);
 		if(rb == -1){
 			printf("pread:%s:%s\n", f_name, strerror(errno));
-			exit (EXIT_FAILURE);	
+			exit( EXIT_FAILURE);
 		}
-		printf("Calculating and printing offset afer pread...\n");
+		printf("Calculation and printing off set after pread...\n");
 		off = get_curr_offset(f_name, fd);
 		printf("current offset (after pread) = %d\n", (int)off);
 	}
 	else {
-		printf("Reading 4096 bytes using read from current offset...\n");
-		rb = read (fd, buffer, BUFFER_SIZE);
+		printf("Reading 4096 butes using read from current offset ... \n");
+		rb = read(fd, buffer, BUFFER_SIZE);
 		if(rb == -1){
 			printf("read:%s:%s\n", f_name, strerror(errno));
 			exit(EXIT_FAILURE);
 		}
-		printf("calculating and printfting current offset...\n");
+		printf("calculating and printing offset after read...\n");
 		off = get_curr_offset(f_name, fd);
-		printf("offset after pwrite =  %d\n", (int)off);
+		printf("current offset (after read) = %d\n", (int)off);
 	}
+
+	memset(buffer, 'C', BUFFER_SIZE);
+	if(p_flag == TRUE){
+		off = get_curr_offset(f_name, fd);
+		wb = pwrite(fd, buffer, BUFFER_SIZE, off);
+		if(wb != BUFFER_SIZE){
+			fprintf(stderr, "%s:%s\n", f_name, strerror(errno));
+			exit(EXIT_FAILURE);
+		}
+		printf("calculating and printing current offset...\n");
+		off = get_curr_offset (f_name, fd);
+		printf("offset after pwrite = %d\n", (int)off);
+	}
+	else{
+		wb = write(fd, buffer, BUFFER_SIZE);
+		if (wb != BUFFER_SIZE){
+			fprintf(stderr, "%s:%s\n", f_name, strerror(errno));
+			exit(EXIT_FAILURE);
+		}
+		printf("calculating and printing current offset...\n");
+		off = get_curr_offset(f_name, fd);
+		printf("ofset after write = %d\n", (int)off);
+	}
+
 	if(close(fd) == -1){
 		fprintf(stderr, "%s:%s\n", f_name, strerror(errno));
 		exit(EXIT_FAILURE);
@@ -113,9 +137,9 @@ off_t get_curr_offset(char *f_name, int fd){
 	off = lseek(fd, 0, SEEK_CUR);
 	if(off == -1){
 		fprintf(stderr, "%s:%s\n", f_name, strerror(errno));
-		exit (EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
-	return (off);
+	return off;
 }
 
 void print_usage(){
